@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ameen Bank — Passbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F3EA;
+    --surface:#FFFFFF;
+    --ink:#1B2A28;
+    --ink-soft:#5B6B67;
+    --primary:#14524A;
+    --primary-dark:#0B3530;
+    --accent:#C89B3C;
+    --accent-soft:#EAD9AE;
+    --danger:#A8433A;
+    --credit:#2E6B4F;
+    --line:#DAD3BE;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 10% 5%, rgba(200,155,60,0.08), transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 20px 60px;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+
+  /* Header */
+  .bank-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:28px;
+    padding-bottom:18px;
+    border-bottom:2px solid var(--primary);
+  }
+  .bank-mark{display:flex;align-items:center;gap:14px;}
+  .seal{
+    width:46px;height:46px;border-radius:50%;
+    background:conic-gradient(from 220deg, var(--accent), #e8cd85, var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;color:var(--primary-dark);
+    font-size:18px;box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
+  .bank-name{font-family:'Fraunces',serif;font-weight:700;font-size:26px;letter-spacing:0.3px;color:var(--primary-dark);}
+  .bank-tag{font-size:12px;color:var(--ink-soft);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+  .today{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft);text-align:right;}
+
+  /* Layout */
+  .grid{display:grid;grid-template-columns:280px 1fr;gap:24px;}
+  @media(max-width:760px){.grid{grid-template-columns:1fr;}}
+
+  /* Customer tabs / card */
+  .customers{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;}
+  .cust-btn{
+    text-align:left;
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    cursor:pointer;
+    transition:.15s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .cust-btn:hover{border-color:var(--primary);}
+  .cust-btn.active{
+    border-color:var(--primary);
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color:#fff;
+  }
+  .cust-btn .cname{font-weight:600;font-size:15px;}
+  .cust-btn .cid{font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.75;margin-top:2px;}
+
+  .account-card{
+    background:linear-gradient(160deg, var(--primary-dark), var(--primary) 65%);
+    color:#F5F3EA;
+    border-radius:var(--radius);
+    padding:22px 20px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(11,53,48,0.25);
+  }
+  .account-card::after{
+    content:"";
+    position:absolute;right:-30px;top:-30px;
+    width:140px;height:140px;border-radius:50%;
+    background:rgba(200,155,60,0.15);
+  }
+  .account-card .label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;}
+  .account-card .accno{font-family:'IBM Plex Mono',monospace;font-size:15px;margin:4px 0 16px;letter-spacing:1px;}
+  .account-card .bal-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;}
+  .account-card .balance{font-family:'Fraunces',serif;font-size:34px;font-weight:600;margin-top:4px;}
+
+  /* Main panel */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    margin-bottom:22px;
+  }
+  .panel h2{
+    font-family:'Fraunces',serif;font-size:18px;margin:0 0 16px;color:var(--primary-dark);
+    display:flex;align-items:center;gap:8px;
+  }
+  .action-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .action-tab{
+    padding:8px 16px;border-radius:999px;border:1px solid var(--line);
+    background:var(--bg);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-soft);
+  }
+  .action-tab.active{background:var(--accent-soft);border-color:var(--accent);color:var(--primary-dark);}
+
+  .form-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px;}
+  .field label{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;}
+  .field select, .field input{
+    padding:10px 12px;border:1px solid var(--line);border-radius:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;background:var(--bg);color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--primary);outline-offset:1px;}
+  .btn{
+    padding:11px 22px;border:none;border-radius:8px;cursor:pointer;
+    font-weight:600;font-size:14px;font-family:'Inter',sans-serif;
+    background:var(--primary);color:#fff;transition:.15s;
+  }
+  .btn:hover{background:var(--primary-dark);}
+  .btn.secondary{background:var(--danger);}
+  .btn.secondary:hover{background:#7c2f28;}
+
+  .msg{
+    margin-top:14px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;
+    display:none;
+  }
+  .msg.show{display:block;}
+  .msg.ok{background:#E4F1E9;color:var(--credit);border:1px solid #BFE0CC;}
+  .msg.err{background:#F6E4E2;color:var(--danger);border:1px solid #EAC3BE;}
+
+  /* Passbook ledger */
+  .passbook{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:0;
+    overflow:hidden;
+  }
+  .passbook-head{
+    background:var(--primary-dark);color:#F5F3EA;
+    padding:14px 20px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'Fraunces',serif;font-size:16px;
+  }
+  .passbook-head span{font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.8;}
+  .ledger{padding:6px 0;max-height:340px;overflow-y:auto;}
+  .ledger-row{
+    display:grid;
+    grid-template-columns:28px 1fr auto;
+    gap:10px;
+    align-items:center;
+    padding:11px 20px;
+    border-bottom:1px dashed var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+  }
+  .ledger-row:last-child{border-bottom:none;}
+  .ledger-row .idx{color:var(--ink-soft);font-size:12px;}
+  .ledger-row .type{color:var(--ink);font-family:'Inter',sans-serif;font-weight:500;}
+  .ledger-row .amt{font-weight:600;text-align:right;}
+  .amt.credit{color:var(--credit);}
+  .amt.debit{color:var(--danger);}
+  .empty-ledger{padding:30px 20px;text-align:center;color:var(--ink-soft);font-size:13px;}
+
+  .footer-note{text-align:center;color:var(--ink-soft);font-size:11.5px;margin-top:26px;letter-spacing:.3px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bank-header">
+    <div class="bank-mark">
+      <div class="seal">AB</div>
+      <div>
+        <div class="bank-name">Ameen Bank</div>
+        <div class="bank-tag">Passbook &amp; Ledger System</div>
+      </div>
+    </div>
+    <div class="today" id="todayDate"></div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: customers + account card -->
+    <div>
+      <div class="customers" id="customerList"></div>
+      <div class="account-card">
+        <div class="label">Account Holder</div>
+        <div class="accno" id="cardName">—</div>
+        <div class="label">Account Number</div>
+        <div class="accno" id="cardAccNo">—</div>
+        <div class="bal-label">Current Balance</div>
+        <div class="balance" id="cardBalance">Rs. 0</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: actions + ledger -->
+    <div>
+      <div class="panel">
+        <h2>Transact</h2>
+        <div class="action-tabs">
+          <div class="action-tab active" data-action="deposit">Deposit</div>
+          <div class="action-tab" data-action="withdraw">Withdraw</div>
+          <div class="action-tab" data-action="transfer">Transfer</div>
+        </div>
+
+        <div class="form-row" id="formArea">
+          <div class="field">
+            <label>Amount (Rs.)</label>
+            <input type="number" id="amountInput" placeholder="e.g. 5000" min="0" step="0.01">
+          </div>
+          <div class="field" id="transferToField" style="display:none;">
+            <label>Transfer To</label>
+            <select id="transferTo"></select>
+          </div>
+          <button class="btn" id="actionBtn">Deposit</button>
+        </div>
+
+        <div class="msg" id="msgBox"></div>
+      </div>
+
+      <div class="passbook">
+        <div class="passbook-head">
+          <span id="ledgerName">Transaction History</span>
+          <span id="ledgerAcc"></span>
+        </div>
+        <div class="ledger" id="ledgerBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">Ameen Bank — internal demo passbook · balances stored locally in your browser</div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'ameenBankData';
+
+  const defaultData = {
+    101: { customerID:101, name:'Ali',   account:1001, balance:0, history:[] },
+    102: { customerID:102, name:'Ahmed', account:1002, balance:0, history:[] }
+  };
+
+  function loadData(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return JSON.parse(JSON.stringify(defaultData));
+      return JSON.parse(raw);
+    }catch(e){
+      return JSON.parse(JSON.stringify(defaultData));
+    }
+  }
+  function saveData(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(bank));
+  }
+
+  let bank = loadData();
+  let activeID = 101;
+  let activeAction = 'deposit';
+
+  const customerList = document.getElementById('customerList');
+  const cardName = document.getElementById('cardName');
+  const cardAccNo = document.getElementById('cardAccNo');
+  const cardBalance = document.getElementById('cardBalance');
+  const ledgerBody = document.getElementById('ledgerBody');
+  const ledgerName = document.getElementById('ledgerName');
+  const ledgerAcc = document.getElementById('ledgerAcc');
+  const amountInput = document.getElementById('amountInput');
+  const actionBtn = document.getElementById('actionBtn');
+  const transferToField = document.getElementById('transferToField');
+  const transferTo = document.getElementById('transferTo');
+  const msgBox = document.getElementById('msgBox');
+
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+  function fmt(n){
+    return 'Rs. ' + Number(n).toLocaleString('en-PK', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  function renderCustomerButtons(){
+    customerList.innerHTML = '';
+    Object.values(bank).forEach(c => {
+      const btn = document.createElement('div');
+      btn.className = 'cust-btn' + (c.customerID === activeID ? ' active' : '');
+      btn.innerHTML = `<div class="cname">${c.name}</div><div class="cid">ID ${c.customerID} · A/C ${c.account}</div>`;
+      btn.addEventListener('click', () => { activeID = c.customerID; showMsg(null); renderAll(); });
+      customerList.appendChild(btn);
+    });
+  }
+
+  function renderTransferOptions(){
+    transferTo.innerHTML = '';
+    Object.values(bank).filter(c => c.customerID !== activeID).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.customerID;
+      opt.textContent = `${c.name} (A/C ${c.account})`;
+      transferTo.appendChild(opt);
+    });
+  }
+
+  function renderAccountCard(){
+    const c = bank[activeID];
+    cardName.textContent = c.name;
+    cardAccNo.textContent = c.account;
+    cardBalance.textContent = fmt(c.balance);
+    ledgerName.textContent = c.name + "'s Passbook";
+    ledgerAcc.textContent = 'A/C ' + c.account;
+  }
+
+  function renderLedger(){
+    const c = bank[activeID];
+    ledgerBody.innerHTML = '';
+    if(!c.history.length){
+      ledgerBody.innerHTML = '<div class="empty-ledger">No transactions found yet. Make a deposit to begin the ledger.</div>';
+      return;
+    }
+    c.history.slice().reverse().forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'ledger-row';
+      const isCredit = t.type === 'Deposit' || t.type === 'Transfer Received';
+      row.innerHTML = `
+        <div class="idx">${c.history.length - i}</div>
+        <div class="type">${t.type}</div>
+        <div class="amt ${isCredit ? 'credit' : 'debit'}">${isCredit ? '+' : '-'} ${fmt(t.amount)}</div>
+      `;
+      ledgerBody.appendChild(row);
+    });
+  }
+
+  function renderAll(){
+    renderCustomerButtons();
+    renderTransferOptions();
+    renderAccountCard();
+    renderLedger();
+    amountInput.value = '';
+  }
+
+  function showMsg(text, ok){
+    if(!text){ msgBox.className = 'msg'; msgBox.textContent=''; return; }
+    msgBox.textContent = text;
+    msgBox.className = 'msg show ' + (ok ? 'ok' : 'err');
+  }
+
+  document.querySelectorAll('.action-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.action-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeAction = tab.dataset.action;
+      transferToField.style.display = activeAction === 'transfer' ? 'flex' : 'none';
+      actionBtn.textContent = activeAction === 'deposit' ? 'Deposit' : activeAction === 'withdraw' ? 'Withdraw' : 'Transfer';
+      actionBtn.className = 'btn' + (activeAction === 'withdraw' ? ' secondary' : '');
+      showMsg(null);
+    });
+  });
+
+  actionBtn.addEventListener('click', () => {
+    const amount = parseFloat(amountInput.value);
+    if(!amount || amount <= 0){
+      showMsg('Please enter a valid amount.', false);
+      return;
+    }
+    const c = bank[activeID];
+
+    if(activeAction === 'deposit'){
+      c.balance += amount;
+      c.history.push({ type:'Deposit', amount });
+      showMsg('Deposit successful!', true);
+    }
+    else if(activeAction === 'withdraw'){
+      if(amount > c.balance){
+        showMsg('Insufficient balance!', false);
+        return;
+      }
+      c.balance -= amount;
+      c.history.push({ type:'Withdrawal', amount });
+      showMsg('Withdrawal successful!', true);
+    }
+    else if(activeAction === 'transfer'){
+      const toID = parseInt(transferTo.value);
+      if(!toID){
+        showMsg('Select a recipient to transfer to.', false);
+        return;
+      }
+      if(amount > c.balance){
+        showMsg('Insufficient balance!', false);
+        return;
+      }
+      const receiver = bank[toID];
+      c.balance -= amount;
+      receiver.balance += amount;
+      c.history.push({ type:'Transfer Sent', amount });
+      receiver.history.push({ type:'Transfer Received', amount });
+      showMsg(`Transfer of ${fmt(amount)} to ${receiver.name} successful!`, true);
+    }
+
+    saveData();
+    renderAll();
+  });
+
+  renderAll();
+</script>
+</body>
+</html>
